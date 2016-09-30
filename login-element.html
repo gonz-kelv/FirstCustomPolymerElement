@@ -1,0 +1,57 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-button/paper-button.html">
+
+<dom-module id="login-element">
+
+    <template>
+        <style>
+        
+        /*
+            AreaA is the top part of the login
+            AreaB will be the bottom half of login
+        */
+
+        :host {
+            display: inline-block;
+            float:left;
+            width:40%;
+        }
+        paper-button.custom{
+            background-color:#008080;
+            color:white;
+        }
+        .AreaA{
+            display:inline-block;
+            width: 50%;
+            margin: 0;
+        }
+        .AreaA1{
+            display:inline-block;
+            width: 40%;
+        }
+
+        </style>
+
+        <!-- contents here -->
+        <h1>Login</h1>
+        <div class="AreaA">
+            <paper-input label="Username"></paper-input>
+            <paper-input label="Password" type="password"></paper-input>
+        </div>
+        <div class="AreaA1">
+            <paper-button class="custom">Enter</paper-button>
+        </div>
+        <div>
+
+        </div>
+    </template>
+
+    <script>
+    // scripts stuff here, like fb login or google
+     Polymer({
+        is: 'login-element',
+     });
+    </script>
+
+</dom-module>
