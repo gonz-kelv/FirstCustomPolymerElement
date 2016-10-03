@@ -1,6 +1,9 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../facebook-login/dist/facebook-login.html">
+<link rel="import" href="../google-signin/google-signin.html">
+
 
 <dom-module id="login-element">
 
@@ -43,7 +46,10 @@
             <paper-button class="custom">Enter</paper-button>
         </div>
         <div>
-
+            <h2>Connect using</h2>
+            <facebook-login></facebook-login>
+            <p>Or</p>
+            <google-signin></google-signin>
         </div>
     </template>
 
