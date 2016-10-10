@@ -1,8 +1,9 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
 <!--<link rel="import" href="../facebook-login/dist/facebook-login.html">-->
-<link rel="import" href="../google-signin/google-signin.html">
+<!--<link rel="import" href="../google-signin/google-signin.html">-->
 
 <dom-module id="login-element">
 
@@ -35,28 +36,29 @@
 
         </style>
 
-        
-
         <!-- contents here -->
-        <h1>Login</h1>
-        <form is="iron-form" id="form" method="post">
-            <div class="AreaA">
-                <paper-input label="Email" id="emailEnter"></paper-input>
-                <paper-input label="Password" id="passwordEnter" type="password"></paper-input>
+        <paper-button onclick="loginDialog.open()">Login</paper-button>
+        <paper-dialog id="loginDialog">
+            <h1>Login</h1>
+            <form is="iron-form" id="form" method="post">
+                <div class="AreaA">
+                    <paper-input label="Email" id="emailEnter"></paper-input>
+                    <paper-input label="Password" id="passwordEnter" type="password"></paper-input>
+                </div>
+                <div class="AreaA1">
+                    <paper-button class="custom" on-click="LoginUser">Enter</paper-button>
+                </div>
+            </form>
+            <div>
+                <h2>Connect using</h2>
+                <!--<facebook-login></facebook-login>-->
+                <fb:login-button data-auto-logout-link="true" scope="public_profile,email" size="large"></fb:login-button>
+                <p>Or</p>
+                <!--<google-signin client-id="752274647587-iumlm4i02sma7ofe7qijtnj77u0v3ogg.apps.googleusercontent.com" scope="https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"></google-signin>-->
+                <div class="g-signin2" on-click="loginGoogle" data-onsuccess="onSignIn" data-theme="light"></div>
             </div>
-            <div class="AreaA1">
-                <paper-button class="custom" on-click="LoginUser">Enter</paper-button>
-            </div>
-        </form>
-        <div>
-            <h2>Connect using</h2>
-            <!--<facebook-login></facebook-login>-->
-            <fb:login-button data-auto-logout-link="true" scope="public_profile,email" size="large"></fb:login-button>
-            <p>Or</p>
-            <!--<google-signin client-id="752274647587-iumlm4i02sma7ofe7qijtnj77u0v3ogg.apps.googleusercontent.com" scope="https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"></google-signin>-->
-            <div class="g-signin2" on-click="loginGoogle" data-onsuccess="onSignIn" data-theme="light"></div>
-        </div>
-        <paper-button id="logoutButton" on-click="LogoutUser">Sign Out of App</paper-button>
+        </paper-dialog>
+        <!--<paper-button id="logoutButton" on-click="LogoutUser">Sign Out of App</paper-button>-->
 
         <script src="https://apis.google.com/js/platform.js" async defer></script>
         <meta name="google-signin-client_id" content="752274647587-iumlm4i02sma7ofe7qijtnj77u0v3ogg.apps.googleusercontent.com">
@@ -82,8 +84,12 @@
         },
         LogoutUser: function(){
             
-            FB.logout(function(response) {
-                console.log('fb user is now logged out');
+            FB.getLoginStatus(function(response) {
+                var uid = response.authResponse.userID;
+                var accessToken = response.authResponse.accessToken;
+
+                FB.api('/'+uid+'/permissions', 'delete', function(response){});
+                console.log('worked');
             });
             
             var auth2 = gapi.auth2.getAuthInstance();
@@ -128,6 +134,14 @@
         storageBucket: "buggie-dev-test-login.appspot.com",
     };
     firebase.initializeApp(config);
+
+    firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        // User is signed in.
+    } else {
+        // No user is signed in.
+    }
+    });
 
     // Start of FB sign in flow
     var fprovider = new firebase.auth.FacebookAuthProvider();
