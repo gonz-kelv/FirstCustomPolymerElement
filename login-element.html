@@ -52,13 +52,13 @@
             <div>
                 <h2>Connect using</h2>
                 <!--<facebook-login></facebook-login>-->
-                <fb:login-button data-auto-logout-link="true" scope="public_profile,email" size="large"></fb:login-button>
+                <fb:login-button scope="public_profile,email" size="large"></fb:login-button>
                 <p>Or</p>
                 <!--<google-signin client-id="752274647587-iumlm4i02sma7ofe7qijtnj77u0v3ogg.apps.googleusercontent.com" scope="https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"></google-signin>-->
-                <div class="g-signin2" on-click="loginGoogle" data-onsuccess="onSignIn" data-theme="light"></div>
+                <div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div>
             </div>
         </paper-dialog>
-        <!--<paper-button id="logoutButton" on-click="LogoutUser">Sign Out of App</paper-button>-->
+        <paper-button id="logoutButton" on-click="LogoutUser">Sign Out of App</paper-button>
 
         <script src="https://apis.google.com/js/platform.js" async defer></script>
         <meta name="google-signin-client_id" content="752274647587-iumlm4i02sma7ofe7qijtnj77u0v3ogg.apps.googleusercontent.com">
@@ -75,33 +75,34 @@
 
             // Authenticate credentials
             firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // ...
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // ...
             });
 
         },
         LogoutUser: function(){
-            
-            FB.getLoginStatus(function(response) {
-                var uid = response.authResponse.userID;
-                var accessToken = response.authResponse.accessToken;
 
-                FB.api('/'+uid+'/permissions', 'delete', function(response){});
-                console.log('worked');
-            });
-            
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-            console.log('User signed out.');
-            });
-
-            firebase.auth().signOut();
-
-            // Signout a user
+            // Signout a user from Firebase
             firebase.auth().signOut().then(function() {
-            // Sign-out successful.
+                // Successful so logout from other provider
+                // Revoke FB permissions
+                FB.api(
+                    '/me/permissions/',
+                    'DELETE',
+                    {},
+                    function(response) {
+                        // Sucessful
+                    }
+                );
+                
+                // Revoke Google+ authentications
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                    // Successful
+                });
+                
             }, function(error) {
             // An error happened.
             });
@@ -136,11 +137,11 @@
     firebase.initializeApp(config);
 
     firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-        // User is signed in.
-    } else {
-        // No user is signed in.
-    }
+        if (user) {
+            // User is signed in.
+        } else {
+            // No user is signed in.
+        }
     });
 
     // Start of FB sign in flow
@@ -150,21 +151,21 @@
     var gprovider = new firebase.auth.GoogleAuthProvider();
 
     firebase.auth().signInWithPopup(fprovider).then(function(result) {
-    // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-    var token = result.credential.accessToken;
-    // The signed-in user info.
-    var user = result.user;
-    
-    // ...
+        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        
+        // ...
     }).catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // The email of the user's account used.
-    var email = error.email;
-    // The firebase.auth.AuthCredential type that was used.
-    var credential = error.credential;
-    // ...
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
     });
 
     firebase.auth().signInWithPopup(gprovider).then(function(result) {
@@ -176,14 +177,14 @@
     // The signed-in user info.
     var user = result.user;
     }).catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // The email of the user's account used.
-    var email = error.email;
-    // The firebase.auth.AuthCredential type that was used.
-    var credential = error.credential;
-    // ...
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
     });
 
     // Subscribe to FB events
